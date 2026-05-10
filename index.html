@@ -6,133 +6,128 @@
 <title>CRM de Vendas — Caio Lobato</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
 :root{
-  --color-background-primary:#ffffff;
-  --color-background-secondary:#f5f4f0;
-  --color-background-tertiary:#eeede9;
-  --color-text-primary:#1a1a1a;
-  --color-text-secondary:#6b6b6b;
-  --color-border-tertiary:rgba(0,0,0,0.1);
-  --color-border-secondary:rgba(0,0,0,0.18);
-  --color-border-primary:rgba(0,0,0,0.28);
+  --navy:#080c12;
+  --navy-2:#0f141c;
+  --navy-3:#161d28;
+  --navy-4:#1e2736;
+  --cream:#f2ede4;
+  --cream-2:#e8e2d8;
+  --cream-3:#cdc8be;
+  --gold:#c9993a;
+  --gold-2:#e0b55a;
+  --gold-glow:rgba(201,153,58,0.15);
+  --border:rgba(242,237,228,0.07);
+  --border-gold:rgba(201,153,58,0.2);
+  --text-muted:#6b7585;
   --border-radius-md:8px;
   --border-radius-lg:12px;
   --font-mono:'SF Mono','Fira Mono',monospace;
 }
-@media(prefers-color-scheme:dark){
-  :root{
-    --color-background-primary:#1c1c1e;
-    --color-background-secondary:#2c2c2e;
-    --color-background-tertiary:#3a3a3c;
-    --color-text-primary:#f5f5f5;
-    --color-text-secondary:#9a9a9a;
-    --color-border-tertiary:rgba(255,255,255,0.08);
-    --color-border-secondary:rgba(255,255,255,0.15);
-    --color-border-primary:rgba(255,255,255,0.25);
-  }
-  body{background:#111113}
-}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh}
 
-header{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.logo{font-size:15px;font-weight:600;color:var(--color-text-primary)}
-.logo span{color:#185FA5}
-header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-text-primary);color:var(--color-background-primary);cursor:pointer}
+header{background:var(--navy-2);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font-size:15px;font-weight:600;color:var(--cream)}
+.logo span{color:var(--gold)}
+header button{font-size:12px;padding:7px 14px;border:1px solid var(--border-gold);border-radius:var(--border-radius-md);background:var(--navy-3);color:var(--cream);cursor:pointer;transition:background 0.2s}
+header button:hover{background:var(--navy-4)}
+.btn-new{background:var(--gold)!important;color:var(--navy)!important;border-color:var(--gold)!important;font-weight:600!important}
+.btn-new:hover{background:var(--gold-2)!important}
 
 .main{padding:1.5rem 24px;max-width:1400px;margin:0 auto}
 
-.tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0}
-.tab{padding:8px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px}
-.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500}
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 0.2s}
+.tab.active{color:var(--cream);border-bottom-color:var(--gold);font-weight:500}
+.tab:hover{color:var(--cream-3)}
 .pane{display:none}.pane.active{display:block}
 
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
 @media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
-.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
-.metric .label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
-.metric .value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
-.metric .sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.metric{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--border-radius-md);padding:12px 14px;position:relative;overflow:hidden}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.metric .label{font-size:12px;color:var(--text-muted);margin-bottom:4px}
+.metric .value{font-size:22px;font-weight:500;color:var(--cream)}
+.metric .sub{font-size:11px;color:var(--text-muted);margin-top:2px}
 
 .pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:start;overflow-x:auto}
 @media(max-width:900px){.pipeline{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:500px){.pipeline{grid-template-columns:repeat(2,1fr)}}
-.stage{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;min-width:160px}
-.stage-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.stage-count{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px;padding:1px 7px;font-size:11px;color:var(--color-text-primary)}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
-.card:hover{border-color:var(--color-border-primary)}
-.card-name{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
-/* NOVO: telefone no card */
-.card-phone{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.card-phone svg{opacity:0.5}
-.card-meta{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.stage{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--border-radius-md);padding:10px;min-width:160px}
+.stage-title{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.stage-count{background:var(--navy-3);border:1px solid var(--border-gold);border-radius:10px;padding:1px 7px;font-size:11px;color:var(--gold)}
+.card{background:var(--navy-3);border:1px solid var(--border);border-radius:var(--border-radius-md);padding:10px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--border-gold)}
+.card-name{font-size:13px;font-weight:500;color:var(--cream);margin-bottom:2px}
+.card-phone{font-size:11px;color:var(--text-muted);margin-bottom:4px;display:flex;align-items:center;gap:4px}
 .card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .tag{font-size:10px;padding:2px 7px;border-radius:10px}
-.tag-meta{background:#E6F1FB;color:#0C447C}
-.tag-google{background:#EAF3DE;color:#27500A}
-.tag-instagram{background:#FBEAF0;color:#72243E}
-.tag-indicacao{background:#FAEEDA;color:#633806}
-.tag-whatsapp{background:#E1F5EE;color:#085041}
-.tag-site{background:#EEEDFE;color:#3C3489}
-.tag-outro{background:#F1EFE8;color:#444441}
-.tag-quente{background:#FCEBEB;color:#791F1F}
-.tag-morno{background:#FAEEDA;color:#633806}
-.tag-frio{background:#E6F1FB;color:#0C447C}
-.card-value{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-top:4px}
-.add-btn{width:100%;padding:6px;font-size:12px;border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;color:var(--color-text-secondary);cursor:pointer;margin-top:4px;transition:background .15s}
-.add-btn:hover{background:var(--color-background-primary)}
+.tag-meta{background:rgba(24,95,165,0.2);color:#6aaee8}
+.tag-google{background:rgba(59,109,17,0.2);color:#8fc45a}
+.tag-instagram{background:rgba(114,36,62,0.2);color:#e88aaa}
+.tag-indicacao{background:rgba(99,56,6,0.2);color:#e0b55a}
+.tag-whatsapp{background:rgba(8,80,65,0.2);color:#5dd4b0}
+.tag-site{background:rgba(60,52,137,0.2);color:#a9a3f5}
+.tag-outro{background:rgba(95,94,90,0.15);color:var(--cream-3)}
+.add-btn{width:100%;padding:6px;font-size:12px;border:1px dashed var(--border-gold);border-radius:var(--border-radius-md);background:none;color:var(--text-muted);cursor:pointer;margin-top:4px;transition:background .15s,color .15s}
+.add-btn:hover{background:var(--navy-4);color:var(--cream)}
 
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100}
-.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.5rem;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--color-text-primary)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:100}
+.modal{background:var(--navy-2);border-radius:var(--border-radius-lg);border:1px solid var(--border-gold);padding:1.5rem;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--cream)}
 .form-row{margin-bottom:12px}
-.form-row label{font-size:12px;color:var(--color-text-secondary);display:block;margin-bottom:4px}
-.form-row input,.form-row select,.form-row textarea{width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
-.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--color-border-primary)}
+.form-row label{font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px}
+.form-row input,.form-row select,.form-row textarea{width:100%;border:1px solid var(--border);border-radius:var(--border-radius-md);padding:8px 10px;font-size:13px;background:var(--navy-3);color:var(--cream);outline:none;transition:border-color 0.2s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--border-gold)}
+.form-row select option{background:var(--navy-3);color:var(--cream)}
 .form-row textarea{resize:vertical;min-height:60px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
-.btn-primary{background:var(--color-text-primary);color:var(--color-background-primary);border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer}
-.btn-primary:hover{opacity:.85}
-.btn-sec{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;color:var(--color-text-primary)}
-.btn-sec:hover{background:var(--color-background-secondary)}
+.btn-primary{background:var(--gold);color:var(--navy);border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;transition:background 0.2s}
+.btn-primary:hover{background:var(--gold-2)}
+.btn-sec{background:none;border:1px solid var(--border);border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;color:var(--cream);transition:background 0.2s,border-color 0.2s}
+.btn-sec:hover{background:var(--navy-3);border-color:var(--border-gold)}
 
-.script-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:1rem;border:0.5px solid var(--color-border-tertiary)}
-.script-box pre{font-family:var(--font-mono);font-size:11px;color:var(--color-text-primary);white-space:pre-wrap;word-break:break-all;line-height:1.6}
-.script-label{font-size:12px;font-weight:500;margin-bottom:8px;color:var(--color-text-primary)}
-.copy-btn{font-size:11px;padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:var(--color-background-primary);cursor:pointer;color:var(--color-text-secondary);margin-top:8px;transition:color .15s}
-.copy-btn:hover{color:var(--color-text-primary)}
+.script-box{background:var(--navy-2);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:1rem;border:1px solid var(--border)}
+.script-box pre{font-family:var(--font-mono);font-size:11px;color:var(--cream-3);white-space:pre-wrap;word-break:break-all;line-height:1.6}
+.script-label{font-size:12px;font-weight:500;margin-bottom:8px;color:var(--cream)}
+.copy-btn{font-size:11px;padding:5px 12px;border:1px solid var(--border-gold);border-radius:6px;background:var(--navy-3);cursor:pointer;color:var(--gold);margin-top:8px;transition:background 0.2s}
+.copy-btn:hover{background:var(--navy-4)}
 
 .origem-chart{display:flex;flex-direction:column;gap:8px;margin-top:1rem}
 .origem-row{display:flex;align-items:center;gap:10px}
-.origem-label{font-size:12px;color:var(--color-text-secondary);width:130px;flex-shrink:0}
-.origem-bar-wrap{flex:1;background:var(--color-background-secondary);border-radius:4px;height:8px;overflow:hidden}
+.origem-label{font-size:12px;color:var(--text-muted);width:130px;flex-shrink:0}
+.origem-bar-wrap{flex:1;background:var(--navy-3);border-radius:4px;height:8px;overflow:hidden}
 .origem-bar{height:100%;border-radius:4px;transition:width .4s ease}
-.origem-count{font-size:12px;font-weight:500;color:var(--color-text-primary);width:30px;text-align:right;flex-shrink:0}
-.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.75rem}
+.origem-count{font-size:12px;font-weight:500;color:var(--cream);width:30px;text-align:right;flex-shrink:0}
+.section-title{font-size:13px;font-weight:500;color:var(--cream);margin-bottom:.75rem}
 
 .leads-table{width:100%;border-collapse:collapse;font-size:12px}
-.leads-table th{font-size:11px;color:var(--color-text-secondary);text-align:left;padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-weight:500;white-space:nowrap}
-.leads-table td{color:var(--color-text-primary);padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle}
-.leads-table tr:hover td{background:var(--color-background-secondary);cursor:pointer}
+.leads-table th{font-size:11px;color:var(--text-muted);text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);font-weight:500;white-space:nowrap}
+.leads-table td{color:var(--cream);padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.leads-table tr:hover td{background:var(--navy-2);cursor:pointer}
 .filters{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
-.filters select,.filters input{font-size:12px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.filters select,.filters input{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--border-radius-md);background:var(--navy-2);color:var(--cream);outline:none}
+.filters select option{background:var(--navy-2)}
+.filters select:focus,.filters input:focus{border-color:var(--border-gold)}
 
-.detail-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-top:1rem;display:none}
+.detail-panel{background:var(--navy-2);border:1px solid var(--border-gold);border-radius:var(--border-radius-lg);padding:1.25rem;margin-top:1rem;display:none}
 .detail-panel.open{display:block}
 .detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
-.detail-name{font-size:17px;font-weight:500;color:var(--color-text-primary)}
-.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--color-text-secondary);line-height:1}
-.history-item{font-size:12px;color:var(--color-text-secondary);padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.detail-name{font-size:17px;font-weight:500;color:var(--cream)}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);line-height:1;transition:color 0.2s}
+.close-btn:hover{color:var(--cream)}
+.history-item{font-size:12px;color:var(--text-muted);padding:6px 0;border-bottom:1px solid var(--border)}
 .history-item:last-child{border-bottom:none}
-.history-date{font-size:10px;color:var(--color-text-secondary)}
+.history-date{font-size:10px;color:var(--text-muted)}
 .add-hist{display:flex;gap:6px;margin-top:8px}
-.add-hist input{flex:1;font-size:12px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.add-hist input{flex:1;font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--border-radius-md);background:var(--navy-3);color:var(--cream);outline:none}
+.add-hist input:focus{border-color:var(--border-gold)}
 .info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.75rem}
 @media(max-width:500px){.info-row{grid-template-columns:repeat(2,1fr)}}
-.info-cell .k{font-size:11px;color:var(--color-text-secondary);margin-bottom:2px}
-.info-cell .v{font-size:13px;color:var(--color-text-primary);font-weight:500}
-.nota-box{font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;padding:8px 10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.info-cell .k{font-size:11px;color:var(--text-muted);margin-bottom:2px}
+.info-cell .v{font-size:13px;color:var(--cream);font-weight:500}
+.nota-box{font-size:12px;color:var(--text-muted);margin-bottom:1rem;padding:8px 10px;background:var(--navy-3);border-radius:var(--border-radius-md);border:1px solid var(--border)}
 .action-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
 .action-row button,.action-row a button{font-size:12px;padding:6px 12px}
 </style>
@@ -142,8 +137,8 @@ header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-bor
 <header>
   <div class="logo">CRM <span>Caio Lobato</span></div>
   <div style="display:flex;gap:8px">
-    <button id="sync-btn" onclick="syncFromSheets()" style="background:none;color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary)">Sincronizar</button>
-    <button onclick="openModal('Lead')">+ Novo lead</button>
+    <button id="sync-btn" onclick="syncFromSheets()">Sincronizar</button>
+    <button class="btn-new" onclick="openModal('Lead')">+ Novo lead</button>
   </div>
 </header>
 
@@ -165,11 +160,9 @@ header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-bor
       <input type="text" id="search-input" placeholder="Buscar lead..." oninput="renderLeadsTable()" style="width:180px">
       <select id="filter-origem" onchange="renderLeadsTable()"><option value="">Todas origens</option></select>
       <select id="filter-stage" onchange="renderLeadsTable()"><option value="">Todos estágios</option></select>
-      <select id="filter-temp" onchange="renderLeadsTable()"><option value="">Temperatura</option><option>Quente</option><option>Morno</option><option>Frio</option></select>
     </div>
     <div style="overflow-x:auto">
-      <!-- ATUALIZADO: coluna Telefone adicionada -->
-      <table class="leads-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Empresa</th><th>Origem</th><th>Estágio</th><th>Temp.</th><th>Valor</th><th>Data</th></tr></thead><tbody id="leads-tbody"></tbody></table>
+      <table class="leads-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Origem</th><th>Estágio</th><th>Data</th></tr></thead><tbody id="leads-tbody"></tbody></table>
     </div>
     <div class="detail-panel" id="detail-panel"></div>
   </div>
@@ -181,7 +174,7 @@ header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-bor
   </div>
 
   <div id="tab-script" class="pane">
-    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Cole esse script em qualquer site seu antes do <code>&lt;/body&gt;</code>. Quando alguém clicar no botão do WhatsApp, um modal coleta Nome e Telefone antes de abrir o chat — e o lead entra automaticamente no CRM.</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Cole esse script em qualquer site seu antes do <code>&lt;/body&gt;</code>. Quando alguém clicar no botão do WhatsApp, um modal coleta Nome e Telefone antes de abrir o chat — e o lead entra automaticamente no CRM.</p>
     <div class="script-box">
       <p class="script-label">Script de rastreamento (com captura de Nome e Telefone)</p>
       <pre id="script-code"></pre>
@@ -194,23 +187,13 @@ header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-bor
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <h3 id="modal-title">Novo lead</h3>
+    <div class="form-row"><label>Nome *</label><input id="f-nome" placeholder="Nome completo"></div>
     <div class="form-grid">
-      <div class="form-row"><label>Nome *</label><input id="f-nome" placeholder="Nome completo"></div>
-      <div class="form-row"><label>Empresa</label><input id="f-empresa" placeholder="Nome da empresa"></div>
-    </div>
-    <div class="form-grid">
-      <!-- ATUALIZADO: campo WhatsApp mais descritivo -->
       <div class="form-row"><label>WhatsApp / Telefone</label><input id="f-wa" placeholder="41999999999"></div>
-      <div class="form-row"><label>Valor estimado (R$)</label><input id="f-valor" type="number" placeholder="0"></div>
-    </div>
-    <div class="form-grid">
       <div class="form-row"><label>Origem *</label>
         <select id="f-origem">
           <option>Meta Ads</option><option>Google Ads</option><option>Instagram Orgânico</option><option>Indicação</option><option>WhatsApp Direto</option><option>Site</option><option>Outro</option>
         </select>
-      </div>
-      <div class="form-row"><label>Temperatura</label>
-        <select id="f-temp"><option>Quente</option><option>Morno</option><option>Frio</option></select>
       </div>
     </div>
     <div class="form-grid">
@@ -230,15 +213,14 @@ header button{font-size:12px;padding:7px 14px;border:0.5px solid var(--color-bor
 <script>
 const STAGES=['Lead','Contato','Proposta','Negociação','Fechado','Perdido'];
 const ORIGENS=['Meta Ads','Google Ads','Instagram Orgânico','Indicação','WhatsApp Direto','Site','Outro'];
-const ORIGEM_COLORS={'Meta Ads':'#185FA5','Google Ads':'#3B6D11','Instagram Orgânico':'#72243E','Indicação':'#633806','WhatsApp Direto':'#085041','Site':'#3C3489','Outro':'#5F5E5A'};
-const SHEETS_URL='https://script.google.com/macros/s/AKfycbxTOF6LYP7xSg445jLuuLpQWuh8C0siS1c5P3NtGnW5aremRxe_yKymX5nqIA8xiAY/exec';
+const ORIGEM_COLORS={'Meta Ads':'#6aaee8','Google Ads':'#8fc45a','Instagram Orgânico':'#e88aaa','Indicação':'#e0b55a','WhatsApp Direto':'#5dd4b0','Site':'#a9a3f5','Outro':'#cdc8be'};
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbz556lD8XSHaLARrOLheZZUkv5icXZouoqyvYj0DyztxsPkUoK7rz6v4kfmhDvKzME/exec';
 
 function getLeads(){return JSON.parse(localStorage.getItem('crm_leads')||'[]')}
 function saveLeads(l){localStorage.setItem('crm_leads',JSON.stringify(l))}
 
 let editId=null;
 
-// ATUALIZADO: sincronização agora puxa Telefone da planilha
 async function syncFromSheets(){
   const syncBtn=document.getElementById('sync-btn');
   if(syncBtn)syncBtn.textContent='Sincronizando...';
@@ -253,17 +235,13 @@ async function syncFromSheets(){
       const sid=(row['Data']||'')+'_'+(row['Nome']||'');
       if(localIds.has(sid))return;
       const now=new Date().toISOString().split('T')[0];
-      // NOVO: captura Telefone da planilha
       const tel=(row['Telefone']||'').replace(/\D/g,'');
       local.push({
         id:Date.now()+Math.random(),
         sheetsId:sid,
         nome:row['Nome']||'Lead via site',
-        empresa:'',
-        wa: tel,                          // NOVO: telefone salvo no campo wa
-        valor:'',
+        wa:tel,
         origem:row['Origem']||'Site',
-        temp:'Morno',
         stage:'Lead',
         utm:row['UTM Campaign']||row['UTM Source']||'',
         nota:'Capturado via site. Página: '+(row['Página']||''),
@@ -273,7 +251,7 @@ async function syncFromSheets(){
       added++;
     });
     if(added>0){saveLeads(local);renderAll();}
-    if(syncBtn)syncBtn.textContent='Sincronizar '+(added>0?'(+'+added+' novos)':'');
+    if(syncBtn)syncBtn.textContent='Sincronizar'+(added>0?' (+'+added+' novos)':'');
     setTimeout(()=>{if(syncBtn)syncBtn.textContent='Sincronizar';},4000);
   }catch(err){if(syncBtn)syncBtn.textContent='Sincronizar';}
 }
@@ -292,17 +270,15 @@ function renderMetrics(){
   const l=getLeads();
   const ativos=l.filter(x=>x.stage!=='Perdido');
   const fechados=l.filter(x=>x.stage==='Fechado');
-  const pipeline=ativos.reduce((a,b)=>a+(Number(b.valor)||0),0);
   const convRate=l.length>0?Math.round(fechados.length/l.length*100):0;
   document.getElementById('metrics-bar').innerHTML=`
     <div class="metric"><div class="label">Total de leads</div><div class="value">${l.length}</div><div class="sub">todos os estágios</div></div>
     <div class="metric"><div class="label">Em pipeline</div><div class="value">${ativos.length}</div><div class="sub">leads ativos</div></div>
-    <div class="metric"><div class="label">Valor em aberto</div><div class="value">R$${pipeline.toLocaleString('pt-BR')}</div><div class="sub">leads ativos</div></div>
+    <div class="metric"><div class="label">Fechados</div><div class="value">${fechados.length}</div><div class="sub">total</div></div>
     <div class="metric"><div class="label">Taxa de conversão</div><div class="value">${convRate}%</div><div class="sub">${fechados.length} fechados</div></div>
   `;
 }
 
-// ATUALIZADO: cards agora mostram telefone abaixo do nome
 function renderPipeline(){
   const l=getLeads();
   const cols=document.getElementById('pipeline-cols');
@@ -311,16 +287,13 @@ function renderPipeline(){
     const cardsHtml=cards.map(c=>`
       <div class="card" onclick="openDetail(${c.id})">
         <div class="card-name">${c.nome}</div>
-        ${c.wa ? `<div class="card-phone">
+        ${c.wa?`<div class="card-phone">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.549 4.1 1.51 5.833L0 24l6.333-1.49A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6c-1.96 0-3.793-.527-5.367-1.443l-.385-.228-3.985.937.995-3.875-.252-.4A9.556 9.556 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4c5.302 0 9.6 4.298 9.6 9.6 0 5.302-4.298 9.6-9.6 9.6z"/></svg>
           ${formatPhone(c.wa)}
-        </div>` : ''}
-        <div class="card-meta">${c.empresa||'&nbsp;'}</div>
+        </div>`:''}
         <div class="card-tags">
           <span class="tag tag-${origemClass(c.origem)}">${c.origem}</span>
-          <span class="tag tag-${c.temp.toLowerCase()}">${c.temp}</span>
         </div>
-        ${c.valor?`<div class="card-value">R$${Number(c.valor).toLocaleString('pt-BR')}</div>`:''}
       </div>
     `).join('');
     return `<div class="stage">
@@ -331,11 +304,10 @@ function renderPipeline(){
   }).join('');
 }
 
-// Formata telefone para exibição: (41) 99999-9999
 function formatPhone(wa){
   const d=wa.replace(/\D/g,'');
-  if(d.length===11) return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
-  if(d.length===10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+  if(d.length===11)return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+  if(d.length===10)return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
   return wa;
 }
 
@@ -344,18 +316,15 @@ function origemClass(o){
   return m[o]||'outro';
 }
 
-// ATUALIZADO: tabela agora tem coluna Telefone
 function renderLeadsTable(){
   const l=getLeads();
   const search=(document.getElementById('search-input')||{value:''}).value.toLowerCase();
   const fo=(document.getElementById('filter-origem')||{value:''}).value;
   const fs=(document.getElementById('filter-stage')||{value:''}).value;
-  const ft=(document.getElementById('filter-temp')||{value:''}).value;
   const filtered=l.filter(x=>{
-    if(search&&!(x.nome.toLowerCase().includes(search)||(x.empresa||'').toLowerCase().includes(search)||(x.wa||'').includes(search)))return false;
+    if(search&&!(x.nome.toLowerCase().includes(search)||(x.wa||'').includes(search)))return false;
     if(fo&&x.origem!==fo)return false;
     if(fs&&x.stage!==fs)return false;
-    if(ft&&x.temp!==ft)return false;
     return true;
   });
   const tbody=document.getElementById('leads-tbody');
@@ -363,12 +332,9 @@ function renderLeadsTable(){
   tbody.innerHTML=filtered.map(c=>`
     <tr onclick="openDetailTab(${c.id})">
       <td>${c.nome}</td>
-      <td>${c.wa ? formatPhone(c.wa) : '—'}</td>
-      <td>${c.empresa||'—'}</td>
+      <td>${c.wa?formatPhone(c.wa):'—'}</td>
       <td><span class="tag tag-${origemClass(c.origem)}">${c.origem}</span></td>
       <td>${c.stage}</td>
-      <td><span class="tag tag-${c.temp.toLowerCase()}">${c.temp}</span></td>
-      <td>${c.valor?'R$'+Number(c.valor).toLocaleString('pt-BR'):'—'}</td>
       <td>${c.date||'—'}</td>
     </tr>
   `).join('');
@@ -417,20 +383,18 @@ function renderOrigens(){
     uc.innerHTML=utmList.length?utmList.map(([u,n])=>`
       <div class="origem-row">
         <span class="origem-label" style="font-family:var(--font-mono);font-size:11px">${u}</span>
-        <div class="origem-bar-wrap"><div class="origem-bar" style="width:${Math.round(n/maxU*100)}%;background:#7F77DD"></div></div>
+        <div class="origem-bar-wrap"><div class="origem-bar" style="width:${Math.round(n/maxU*100)}%;background:var(--gold)"></div></div>
         <span class="origem-count">${n}</span>
       </div>
-    `).join(''):'<p style="font-size:12px;color:var(--color-text-secondary)">Nenhum lead com UTM ainda.</p>';
+    `).join(''):'<p style="font-size:12px;color:var(--text-muted)">Nenhum lead com UTM ainda.</p>';
   }
 }
 
 function openModal(stage){
   editId=null;
   document.getElementById('modal-title').textContent='Novo lead';
-  ['f-nome','f-empresa','f-wa','f-utm','f-nota'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-valor').value='';
+  ['f-nome','f-wa','f-utm','f-nota'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-origem').value='Meta Ads';
-  document.getElementById('f-temp').value='Morno';
   document.getElementById('f-stage').value=stage||'Lead';
   document.getElementById('modal-bg').style.display='flex';
 }
@@ -444,36 +408,33 @@ function saveLead(){
   const now=new Date().toISOString().split('T')[0];
   if(editId){
     const i=l.findIndex(x=>x.id===editId);
-    if(i>=0)l[i]={...l[i],nome,empresa:document.getElementById('f-empresa').value,wa:document.getElementById('f-wa').value.replace(/\D/g,''),valor:document.getElementById('f-valor').value,origem:document.getElementById('f-origem').value,temp:document.getElementById('f-temp').value,stage:document.getElementById('f-stage').value,utm:document.getElementById('f-utm').value,nota:document.getElementById('f-nota').value};
+    if(i>=0)l[i]={...l[i],nome,wa:document.getElementById('f-wa').value.replace(/\D/g,''),origem:document.getElementById('f-origem').value,stage:document.getElementById('f-stage').value,utm:document.getElementById('f-utm').value,nota:document.getElementById('f-nota').value};
   }else{
-    l.push({id:Date.now(),nome,empresa:document.getElementById('f-empresa').value,wa:document.getElementById('f-wa').value.replace(/\D/g,''),valor:document.getElementById('f-valor').value,origem:document.getElementById('f-origem').value,temp:document.getElementById('f-temp').value,stage:document.getElementById('f-stage').value,utm:document.getElementById('f-utm').value,nota:document.getElementById('f-nota').value,history:[{txt:'Lead criado',date:now}],date:now});
+    l.push({id:Date.now(),nome,wa:document.getElementById('f-wa').value.replace(/\D/g,''),origem:document.getElementById('f-origem').value,stage:document.getElementById('f-stage').value,utm:document.getElementById('f-utm').value,nota:document.getElementById('f-nota').value,history:[{txt:'Lead criado',date:now}],date:now});
   }
   saveLeads(l);closeModal();renderAll();
 }
 
 function openDetail(id){showTab('leads');openDetailTab(id)}
 
-// ATUALIZADO: painel de detalhe mostra telefone com link WhatsApp
 function openDetailTab(id){
   const l=getLeads();const c=l.find(x=>x.id===id);if(!c)return;
   const panel=document.getElementById('detail-panel');
   panel.className='detail-panel open';
-  const telFormatado = c.wa ? formatPhone(c.wa) : '—';
+  const telFormatado=c.wa?formatPhone(c.wa):'—';
   panel.innerHTML=`
     <div class="detail-header">
       <div>
         <div class="detail-name">${c.nome}</div>
-        <div style="font-size:12px;color:var(--color-text-secondary)">${c.empresa||''}${c.wa?' · '+telFormatado:''}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${c.wa?' · '+telFormatado:''}</div>
       </div>
       <button class="close-btn" onclick="document.getElementById('detail-panel').className='detail-panel'">×</button>
     </div>
     <div class="info-row">
       <div class="info-cell"><div class="k">Estágio</div><div class="v">${c.stage}</div></div>
-      <div class="info-cell"><div class="k">Temperatura</div><div class="v">${c.temp}</div></div>
       <div class="info-cell"><div class="k">Origem</div><div class="v">${c.origem}</div></div>
       <div class="info-cell"><div class="k">Telefone</div><div class="v">${telFormatado}</div></div>
       <div class="info-cell"><div class="k">UTM</div><div class="v">${c.utm||'—'}</div></div>
-      <div class="info-cell"><div class="k">Valor</div><div class="v">${c.valor?'R$'+Number(c.valor).toLocaleString('pt-BR'):'—'}</div></div>
       <div class="info-cell"><div class="k">Data entrada</div><div class="v">${c.date||'—'}</div></div>
     </div>
     ${c.nota?`<div class="nota-box">${c.nota}</div>`:''}
@@ -483,7 +444,7 @@ function openDetailTab(id){
       <button class="btn-sec" onclick="editLead(${c.id})">Editar</button>
       ${c.wa?`<a href="https://wa.me/55${c.wa}" target="_blank"><button class="btn-sec">WhatsApp</button></a>`:''}
     </div>
-    <p style="font-size:12px;font-weight:500;margin-bottom:6px">Histórico</p>
+    <p style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--cream)">Histórico</p>
     <div>${(c.history||[]).map(h=>`<div class="history-item"><span class="history-date">${h.date}</span> — ${h.txt}</div>`).join('')}</div>
     <div class="add-hist">
       <input id="new-hist-${c.id}" placeholder="Registrar interação...">
@@ -518,11 +479,8 @@ function editLead(id){
   editId=id;
   document.getElementById('modal-title').textContent='Editar lead';
   document.getElementById('f-nome').value=c.nome;
-  document.getElementById('f-empresa').value=c.empresa||'';
   document.getElementById('f-wa').value=c.wa?formatPhone(c.wa):'';
-  document.getElementById('f-valor').value=c.valor||'';
   document.getElementById('f-origem').value=c.origem;
-  document.getElementById('f-temp').value=c.temp;
   document.getElementById('f-stage').value=c.stage;
   document.getElementById('f-utm').value=c.utm||'';
   document.getElementById('f-nota').value=c.nota||'';
@@ -550,54 +508,11 @@ function setScriptCode(){
     if(s==='instagram')return 'Instagram Orgânico';
     return 'Orgânico';
   }
-  let pendingHref=null;
   window.addEventListener('load',function(){
-    fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+    fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
       body:JSON.stringify({tipo:'visita',origem:getOrigem(),utm_source:getParam('utm_source'),utm_campaign:getParam('utm_campaign'),pagina:window.location.href,dispositivo:dispositivo})
     }).catch(function(){});
   });
-  document.addEventListener('click',function(e){
-    const el=e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp"]');
-    if(!el)return;
-    e.preventDefault();
-    pendingHref=el.href;
-    document.getElementById('leadModalBg').classList.add('open');
-    setTimeout(function(){document.getElementById('leadNome').focus();},100);
-  });
-  document.getElementById('leadModalBg').addEventListener('click',function(e){if(e.target===this)fechar();});
-  document.getElementById('leadModalClose').addEventListener('click',fechar);
-  function fechar(){
-    document.getElementById('leadModalBg').classList.remove('open');
-    document.getElementById('leadNome').value='';
-    document.getElementById('leadTelefone').value='';
-    pendingHref=null;
-  }
-  document.getElementById('leadTelefone').addEventListener('input',function(){
-    let v=this.value.replace(/\\D/g,'');
-    if(v.length>11)v=v.slice(0,11);
-    if(v.length>6)v='('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
-    else if(v.length>2)v='('+v.slice(0,2)+') '+v.slice(2);
-    else if(v.length>0)v='('+v;
-    this.value=v;
-  });
-  document.getElementById('leadModalBtn').addEventListener('click',enviar);
-  function enviar(){
-    const nome=document.getElementById('leadNome').value.trim();
-    const tel=document.getElementById('leadTelefone').value.trim();
-    if(!nome||tel.replace(/\\D/g,'').length<10)return;
-    const now=new Date().toISOString().split('T')[0];
-    fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({tipo:'lead',nome:nome,telefone:tel,origem:getOrigem(),utm_source:getParam('utm_source'),utm_campaign:getParam('utm_campaign'),pagina:window.location.href,dispositivo:dispositivo})
-    }).catch(function(){});
-    if(typeof fbq!=='undefined')fbq('track','Lead');
-    try{
-      const leads=JSON.parse(localStorage.getItem('crm_leads')||'[]');
-      leads.push({id:Date.now(),nome:nome,wa:tel.replace(/\\D/g,''),empresa:'',valor:'',origem:getOrigem(),temp:'Morno',stage:'Lead',utm:getParam('utm_campaign')||getParam('utm_source')||'',nota:'Capturado via site. Página: '+window.location.href,history:[{txt:'Lead capturado via formulário do site',date:now}],date:now});
-      localStorage.setItem('crm_leads',JSON.stringify(leads));
-    }catch(err){}
-    fechar();
-    if(pendingHref)window.open(pendingHref,'_blank');
-  }
 })();
 <\/script>`;
   const el=document.getElementById('script-code');
