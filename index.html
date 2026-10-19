@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
 <title>CRM de Vendas — Caio Lobato</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -42,8 +43,7 @@ header button:hover{background:var(--navy-4)}
 .tab:hover{color:var(--cream-3)}
 .pane{display:none}.pane.active{display:block}
 
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
-@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem}
 .metric{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--border-radius-md);padding:12px 14px;position:relative;overflow:hidden}
 .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
 .metric .label{font-size:12px;color:var(--text-muted);margin-bottom:4px}
@@ -137,7 +137,10 @@ header button:hover{background:var(--navy-4)}
 <header>
   <div class="logo">CRM <span>Caio Lobato</span></div>
   <div style="display:flex;gap:8px">
-    <button id="sync-btn" onclick="syncFromSheets()">Sincronizar</button>
+    <button onclick="exportarBackup()" title="Baixa um arquivo com todos os leads">Backup</button>
+    <button onclick="document.getElementById('file-backup').click()" title="Restaura leads de um backup">Restaurar</button>
+    <input type="file" id="file-backup" accept=".json" hidden onchange="importarBackup(event)">
+    <button id="sync-btn" onclick="semChave=false;syncFromSheets()">Sincronizar</button>
     <button class="btn-new" onclick="openModal('Lead')">+ Novo lead</button>
   </div>
 </header>
@@ -174,9 +177,9 @@ header button:hover{background:var(--navy-4)}
   </div>
 
   <div id="tab-script" class="pane">
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Cole esse script em qualquer site seu antes do <code>&lt;/body&gt;</code>. Quando alguém clicar no botão do WhatsApp, um modal coleta Nome e Telefone antes de abrir o chat — e o lead entra automaticamente no CRM.</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Cole esse script em qualquer site seu antes do <code>&lt;/body&gt;</code>. Ele registra cada visita e, quando alguém clicar no botão do WhatsApp, o lead entra automaticamente no CRM. Troque <code>SEU_URL_DO_APPS_SCRIPT_AQUI</code> pela URL de publicação do seu Apps Script.</p>
     <div class="script-box">
-      <p class="script-label">Script de rastreamento (com captura de Nome e Telefone)</p>
+      <p class="script-label">Script de rastreamento (visitas e cliques no WhatsApp)</p>
       <pre id="script-code"></pre>
       <button class="copy-btn" onclick="copyScript()">Copiar script</button>
     </div>
@@ -192,7 +195,7 @@ header button:hover{background:var(--navy-4)}
       <div class="form-row"><label>WhatsApp / Telefone</label><input id="f-wa" placeholder="41999999999"></div>
       <div class="form-row"><label>Origem *</label>
         <select id="f-origem">
-          <option>Meta Ads</option><option>Google Ads</option><option>Instagram Orgânico</option><option>Indicação</option><option>WhatsApp Direto</option><option>Site</option><option>Outro</option>
+          
         </select>
       </div>
     </div>
@@ -212,70 +215,186 @@ header button:hover{background:var(--navy-4)}
 
 <script>
 const STAGES=['Lead','Contato','Proposta','Negociação','Fechado','Perdido'];
-const ORIGENS=['Meta Ads','Google Ads','Instagram Orgânico','Indicação','WhatsApp Direto','Site','Outro'];
-const ORIGEM_COLORS={'Meta Ads':'#6aaee8','Google Ads':'#8fc45a','Instagram Orgânico':'#e88aaa','Indicação':'#e0b55a','WhatsApp Direto':'#5dd4b0','Site':'#a9a3f5','Outro':'#cdc8be'};
+const ORIGENS=['Meta Ads','Google Ads','Instagram Orgânico','Google Orgânico','Google Meu Negócio','Facebook Orgânico','Indicação','WhatsApp Direto','Referência','Direto','Site','Outro'];
+const ORIGEM_COLORS={'Meta Ads':'#6aaee8','Google Ads':'#8fc45a','Instagram Orgânico':'#e88aaa','Google Orgânico':'#b7d98a','Google Meu Negócio':'#6fbf9a','Facebook Orgânico':'#8fbfe8','Indicação':'#e0b55a','WhatsApp Direto':'#5dd4b0','Referência':'#d9b56a','Direto':'#cdc8be','Orgânico':'#a9a3f5','Site':'#a9a3f5','Outro':'#cdc8be'};
 const SHEETS_URL='https://script.google.com/macros/s/AKfycbz556lD8XSHaLARrOLheZZUkv5icXZouoqyvYj0DyztxsPkUoK7rz6v4kfmhDvKzME/exec';
 
-function getLeads(){return JSON.parse(localStorage.getItem('crm_leads')||'[]')}
+function getLeads(){try{const l=JSON.parse(localStorage.getItem('crm_leads')||'[]');return Array.isArray(l)?l:[]}catch(e){return []}}
+function getIgnorados(){try{return new Set(JSON.parse(localStorage.getItem('crm_ignorados')||'[]'))}catch(e){return new Set()}}
+function saveIgnorados(s){localStorage.setItem('crm_ignorados',JSON.stringify([...s]))}
+function getSiteStats(){try{return JSON.parse(localStorage.getItem('crm_site_stats')||'null')}catch(e){return null}}
+function hoje(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtData(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?m[3]+'/'+m[2]+'/'+m[1]:(s||'')}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function norm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+function campo(r,...nomes){for(const n of nomes){const v=r[norm(n)];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim()}return ''}
+function parseData(v){
+  if(!v)return hoje();
+  const br=/^(\d{2})\/(\d{2})\/(\d{4})/.exec(v);
+  if(br)return br[3]+'-'+br[2]+'-'+br[1];
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
+  const d=new Date(v);
+  if(isNaN(d))return hoje();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
 function saveLeads(l){localStorage.setItem('crm_leads',JSON.stringify(l))}
 
 let editId=null;
+let syncando=false;
+let semChave=false;
 
 async function syncFromSheets(){
+  if(syncando||semChave)return;
+  syncando=true;
   const syncBtn=document.getElementById('sync-btn');
-  if(syncBtn)syncBtn.textContent='Sincronizando...';
+  const setBtn=t=>{if(syncBtn)syncBtn.textContent=t};
+  setBtn('Sincronizando...');
   try{
-    const res=await fetch(SHEETS_URL);
+    let chave=localStorage.getItem('crm_chave')||'';
+    if(!chave){
+      chave=(prompt('Chave de acesso do CRM:')||'').trim();
+      if(!chave){semChave=true;setBtn('Sincronizar');return}
+      localStorage.setItem('crm_chave',chave);
+    }
+    const url=SHEETS_URL+'?k='+encodeURIComponent(chave);
+    const res=await fetch(url);
     const rows=await res.json();
-    if(!Array.isArray(rows)||rows.length===0){if(syncBtn)syncBtn.textContent='Sincronizar';return;}
+    if(!Array.isArray(rows)){
+      if(rows&&rows.status==='negado'){localStorage.removeItem('crm_chave');semChave=true;setBtn('Chave inválida');return}
+      throw new Error('resposta inesperada');
+    }
     const local=getLeads();
-    const localIds=new Set(local.map(x=>x.sheetsId||'').filter(Boolean));
+    const ids=new Set(local.map(x=>x.sheetsId).filter(Boolean));
+    const ign=getIgnorados();
     let added=0;
     rows.forEach(row=>{
-      const sid=(row['Data']||'')+'_'+(row['Nome']||'');
-      if(localIds.has(sid))return;
-      const now=new Date().toISOString().split('T')[0];
-      const tel=(row['Telefone']||'').replace(/\D/g,'');
+      const r={};
+      for(const k in row)r[norm(k)]=row[k];
+      const eid=campo(r,'event_id');
+      // sem Event ID (leads antigos ou de outros sites) mantem a chave antiga Data + Nome
+      const sid=eid||((row['Data']||'')+'_'+(row['Nome']||''));
+      if(ids.has(sid)||ign.has(sid))return;
+      ids.add(sid);
+      const data=parseData(campo(r,'data'));
+      const codigo=campo(r,'codigo');
+      let nome=campo(r,'nome');
+      if(!nome||/^lead via /i.test(nome))nome=codigo?'Lead '+codigo:'Lead via site';
+      const disp=campo(r,'dispositivo');
+      const nota=['Capturado via site',
+        campo(r,'cta')&&'Botão: '+campo(r,'cta'),
+        campo(r,'pagina')&&'Página: '+campo(r,'pagina'),
+        campo(r,'gclid')&&'Clique em anúncio Google (gclid)',
+        campo(r,'fbclid')&&'Clique em anúncio Meta (fbclid)',
+        campo(r,'utm_medium')&&'Mídia: '+campo(r,'utm_medium'),
+        campo(r,'utm_content')&&'Criativo: '+campo(r,'utm_content'),
+        campo(r,'utm_term')&&'Termo: '+campo(r,'utm_term'),
+        campo(r,'referrer')&&'Referrer: '+campo(r,'referrer')
+      ].filter(Boolean).join(' | ');
       local.push({
         id:Date.now()+Math.random(),
         sheetsId:sid,
-        nome:row['Nome']||'Lead via site',
-        wa:tel,
-        origem:row['Origem']||'Site',
+        nome,
+        wa:campo(r,'telefone').replace(/\D/g,''),
+        origem:campo(r,'origem')||'Site',
         stage:'Lead',
-        utm:row['UTM Campaign']||row['UTM Source']||'',
-        nota:'Capturado via site. Página: '+(row['Página']||''),
-        history:[{txt:'Lead capturado via site ('+(row['Dispositivo']||'')+')',date:now}],
-        date:now
+        utm:campo(r,'utm_campaign','utm_source'),
+        nota,
+        ref:codigo,
+        history:[{txt:'Lead capturado via site'+(disp?' ('+disp+')':'')+(codigo?', ref '+codigo:''),date:data}],
+        date:data
       });
       added++;
     });
-    if(added>0){saveLeads(local);renderAll();}
-    if(syncBtn)syncBtn.textContent='Sincronizar'+(added>0?' (+'+added+' novos)':'');
-    setTimeout(()=>{if(syncBtn)syncBtn.textContent='Sincronizar';},4000);
-  }catch(err){if(syncBtn)syncBtn.textContent='Sincronizar';}
+    if(added>0)saveLeads(local);
+    // visitas: so existe no Apps Script novo (acao=stats). No antigo a resposta e ignorada.
+    let statsMudou=false;
+    try{
+      const st=await (await fetch(url+'&acao=stats')).json();
+      if(st&&typeof st.visitas==='number'){
+        const novo=JSON.stringify({visitas:st.visitas,leads:st.leads});
+        if(novo!==localStorage.getItem('crm_site_stats')){localStorage.setItem('crm_site_stats',novo);statsMudou=true}
+      }
+    }catch(e){}
+    if(added>0||statsMudou)renderAll();
+    setBtn('Sincronizar'+(added>0?' (+'+added+' novos)':''));
+    setTimeout(()=>setBtn('Sincronizar'),4000);
+  }catch(err){
+    setBtn('Erro ao sincronizar');
+    setTimeout(()=>setBtn('Sincronizar'),4000);
+  }finally{syncando=false}
+}
+
+function deleteLead(id){
+  const l=getLeads();const c=l.find(x=>x.id===id);if(!c)return;
+  if(!confirm('Excluir "'+c.nome+'"? Essa ação não pode ser desfeita.'))return;
+  if(c.sheetsId){const ign=getIgnorados();ign.add(c.sheetsId);saveIgnorados(ign)}
+  saveLeads(l.filter(x=>x.id!==id));
+  document.getElementById('detail-panel').className='detail-panel';
+  renderAll();
+}
+
+function exportarBackup(){
+  const dados={versao:1,leads:getLeads(),ignorados:[...getIgnorados()]};
+  const blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='crm-backup-'+hoje()+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+function importarBackup(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      if(!d||!Array.isArray(d.leads))throw new Error('formato');
+      if(!confirm('Substituir os '+getLeads().length+' leads atuais pelos '+d.leads.length+' do backup?'))return;
+      saveLeads(d.leads);
+      localStorage.setItem('crm_ignorados',JSON.stringify(Array.isArray(d.ignorados)?d.ignorados:[]));
+      renderAll();
+    }catch(e){alert('Arquivo de backup inválido')}
+  };
+  rd.readAsText(f);ev.target.value='';
 }
 
 function init(){
-  let l=getLeads();
-  if(l.length===0)saveLeads([]);
   renderAll();populateFilters();setScriptCode();
   syncFromSheets();
-  setInterval(syncFromSheets,30000);
+  setInterval(()=>{if(!document.hidden)syncFromSheets()},60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncFromSheets()});
 }
 
-function renderAll(){renderMetrics();renderPipeline();renderLeadsTable();renderOrigens()}
+function refreshOrigens(){
+  const usadas=[...ORIGENS];
+  getLeads().forEach(x=>{if(x.origem&&!usadas.includes(x.origem))usadas.push(x.origem)});
+  const opts=usadas.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('');
+  const fo=document.getElementById('filter-origem');
+  if(fo){const v=fo.value;fo.innerHTML='<option value="">Todas origens</option>'+opts;fo.value=v}
+  const fm=document.getElementById('f-origem');
+  if(fm){const v=fm.value;fm.innerHTML=opts;if(v)fm.value=v}
+}
+function garantirOpcao(o){
+  const fm=document.getElementById('f-origem');
+  if(o&&fm&&![...fm.options].some(x=>x.value===o)){const opt=document.createElement('option');opt.value=o;opt.textContent=o;fm.appendChild(opt)}
+}
+function waLink(wa){const d=String(wa).replace(/\D/g,'');return 'https://wa.me/'+(d.length>=12?d:'55'+d)}
+
+function renderAll(){refreshOrigens();renderMetrics();renderPipeline();renderLeadsTable();renderOrigens()}
 
 function renderMetrics(){
   const l=getLeads();
-  const ativos=l.filter(x=>x.stage!=='Perdido');
+  const ativos=l.filter(x=>x.stage!=='Perdido'&&x.stage!=='Fechado');
   const fechados=l.filter(x=>x.stage==='Fechado');
   const convRate=l.length>0?Math.round(fechados.length/l.length*100):0;
+  const st=getSiteStats();
+  const visitaCard=st&&st.visitas>0?`<div class="metric"><div class="label">Visitas no site</div><div class="value">${st.visitas}</div><div class="sub">${(st.leads/st.visitas*100).toFixed(1).replace('.',',')}% clicam no WhatsApp</div></div>`:'';
   document.getElementById('metrics-bar').innerHTML=`
     <div class="metric"><div class="label">Total de leads</div><div class="value">${l.length}</div><div class="sub">todos os estágios</div></div>
     <div class="metric"><div class="label">Em pipeline</div><div class="value">${ativos.length}</div><div class="sub">leads ativos</div></div>
     <div class="metric"><div class="label">Fechados</div><div class="value">${fechados.length}</div><div class="sub">total</div></div>
     <div class="metric"><div class="label">Taxa de conversão</div><div class="value">${convRate}%</div><div class="sub">${fechados.length} fechados</div></div>
+    ${visitaCard}
   `;
 }
 
@@ -286,13 +405,13 @@ function renderPipeline(){
     const cards=l.filter(x=>x.stage===s);
     const cardsHtml=cards.map(c=>`
       <div class="card" onclick="openDetail(${c.id})">
-        <div class="card-name">${c.nome}</div>
+        <div class="card-name">${esc(c.nome)}</div>
         ${c.wa?`<div class="card-phone">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.549 4.1 1.51 5.833L0 24l6.333-1.49A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.6c-1.96 0-3.793-.527-5.367-1.443l-.385-.228-3.985.937.995-3.875-.252-.4A9.556 9.556 0 012.4 12C2.4 6.698 6.698 2.4 12 2.4c5.302 0 9.6 4.298 9.6 9.6 0 5.302-4.298 9.6-9.6 9.6z"/></svg>
           ${formatPhone(c.wa)}
         </div>`:''}
         <div class="card-tags">
-          <span class="tag tag-${origemClass(c.origem)}">${c.origem}</span>
+          <span class="tag tag-${origemClass(c.origem)}">${esc(c.origem)}</span>
         </div>
       </div>
     `).join('');
@@ -305,14 +424,15 @@ function renderPipeline(){
 }
 
 function formatPhone(wa){
-  const d=wa.replace(/\D/g,'');
+  let d=String(wa||'').replace(/\D/g,'');
+  if(d.length>=12&&d.startsWith('55'))d=d.slice(2);
   if(d.length===11)return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
   if(d.length===10)return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
   return wa;
 }
 
 function origemClass(o){
-  const m={'Meta Ads':'meta','Google Ads':'google','Instagram Orgânico':'instagram','Indicação':'indicacao','WhatsApp Direto':'whatsapp','Site':'site'};
+  const m={'Meta Ads':'meta','Google Ads':'google','Instagram Orgânico':'instagram','Google Orgânico':'google','Google Meu Negócio':'google','Facebook Orgânico':'meta','Indicação':'indicacao','Referência':'indicacao','WhatsApp Direto':'whatsapp','Site':'site','Orgânico':'site'};
   return m[o]||'outro';
 }
 
@@ -322,7 +442,8 @@ function renderLeadsTable(){
   const fo=(document.getElementById('filter-origem')||{value:''}).value;
   const fs=(document.getElementById('filter-stage')||{value:''}).value;
   const filtered=l.filter(x=>{
-    if(search&&!(x.nome.toLowerCase().includes(search)||(x.wa||'').includes(search)))return false;
+    const sd=search.replace(/\D/g,'');
+    if(search&&!((x.nome||'').toLowerCase().includes(search)||(x.nota||'').toLowerCase().includes(search)||(x.ref||'').toLowerCase().includes(search)||(sd&&(x.wa||'').includes(sd))))return false;
     if(fo&&x.origem!==fo)return false;
     if(fs&&x.stage!==fs)return false;
     return true;
@@ -331,20 +452,18 @@ function renderLeadsTable(){
   if(!tbody)return;
   tbody.innerHTML=filtered.map(c=>`
     <tr onclick="openDetailTab(${c.id})">
-      <td>${c.nome}</td>
+      <td>${esc(c.nome)}</td>
       <td>${c.wa?formatPhone(c.wa):'—'}</td>
-      <td><span class="tag tag-${origemClass(c.origem)}">${c.origem}</span></td>
+      <td><span class="tag tag-${origemClass(c.origem)}">${esc(c.origem)}</span></td>
       <td>${c.stage}</td>
-      <td>${c.date||'—'}</td>
+      <td>${c.date?fmtData(c.date):'—'}</td>
     </tr>
   `).join('');
 }
 
 function populateFilters(){
-  const fo=document.getElementById('filter-origem');
   const fs=document.getElementById('filter-stage');
-  if(!fo||!fs)return;
-  ORIGENS.forEach(o=>{const opt=document.createElement('option');opt.value=o;opt.textContent=o;fo.appendChild(opt)});
+  if(!fs)return;
   STAGES.forEach(s=>{const opt=document.createElement('option');opt.value=s;opt.textContent=s;fs.appendChild(opt)});
 }
 
@@ -361,7 +480,7 @@ function renderOrigens(){
     const topCh=topOrigem[0]||['—',0];
     om.innerHTML=`
       <div class="metric"><div class="label">Canais ativos</div><div class="value">${topOrigem.length}</div></div>
-      <div class="metric"><div class="label">Maior canal</div><div class="value" style="font-size:15px">${topCh[0]}</div><div class="sub">${topCh[1]} leads</div></div>
+      <div class="metric"><div class="label">Maior canal</div><div class="value" style="font-size:15px">${esc(topCh[0])}</div><div class="sub">${topCh[1]} leads</div></div>
       <div class="metric"><div class="label">Campanhas UTM</div><div class="value">${Object.keys(byUtm).length}</div></div>
       <div class="metric"><div class="label">Fechados</div><div class="value">${fechados.length}</div><div class="sub">total</div></div>
     `;
@@ -370,7 +489,7 @@ function renderOrigens(){
   const oc=document.getElementById('origem-chart');
   if(oc)oc.innerHTML=topOrigem.map(([o,n])=>`
     <div class="origem-row">
-      <span class="origem-label">${o}</span>
+      <span class="origem-label">${esc(o)}</span>
       <div class="origem-bar-wrap"><div class="origem-bar" style="width:${Math.round(n/maxO*100)}%;background:${ORIGEM_COLORS[o]||'#888'}"></div></div>
       <span class="origem-count">${n}</span>
     </div>
@@ -382,7 +501,7 @@ function renderOrigens(){
     const maxU=Math.max(...utmList.map(x=>x[1]),1);
     uc.innerHTML=utmList.length?utmList.map(([u,n])=>`
       <div class="origem-row">
-        <span class="origem-label" style="font-family:var(--font-mono);font-size:11px">${u}</span>
+        <span class="origem-label" style="font-family:var(--font-mono);font-size:11px">${esc(u)}</span>
         <div class="origem-bar-wrap"><div class="origem-bar" style="width:${Math.round(n/maxU*100)}%;background:var(--gold)"></div></div>
         <span class="origem-count">${n}</span>
       </div>
@@ -405,7 +524,7 @@ function saveLead(){
   const nome=document.getElementById('f-nome').value.trim();
   if(!nome){alert('Nome obrigatório');return}
   const l=getLeads();
-  const now=new Date().toISOString().split('T')[0];
+  const now=hoje();
   if(editId){
     const i=l.findIndex(x=>x.id===editId);
     if(i>=0)l[i]={...l[i],nome,wa:document.getElementById('f-wa').value.replace(/\D/g,''),origem:document.getElementById('f-origem').value,stage:document.getElementById('f-stage').value,utm:document.getElementById('f-utm').value,nota:document.getElementById('f-nota').value};
@@ -425,27 +544,29 @@ function openDetailTab(id){
   panel.innerHTML=`
     <div class="detail-header">
       <div>
-        <div class="detail-name">${c.nome}</div>
+        <div class="detail-name">${esc(c.nome)}</div>
         <div style="font-size:12px;color:var(--text-muted)">${c.wa?' · '+telFormatado:''}</div>
       </div>
       <button class="close-btn" onclick="document.getElementById('detail-panel').className='detail-panel'">×</button>
     </div>
     <div class="info-row">
       <div class="info-cell"><div class="k">Estágio</div><div class="v">${c.stage}</div></div>
-      <div class="info-cell"><div class="k">Origem</div><div class="v">${c.origem}</div></div>
+      <div class="info-cell"><div class="k">Origem</div><div class="v">${esc(c.origem)}</div></div>
       <div class="info-cell"><div class="k">Telefone</div><div class="v">${telFormatado}</div></div>
-      <div class="info-cell"><div class="k">UTM</div><div class="v">${c.utm||'—'}</div></div>
-      <div class="info-cell"><div class="k">Data entrada</div><div class="v">${c.date||'—'}</div></div>
+      <div class="info-cell"><div class="k">UTM</div><div class="v">${esc(c.utm)||'—'}</div></div>
+      ${c.ref?'<div class="info-cell"><div class="k">Código (ref)</div><div class="v">'+esc(c.ref)+'</div></div>':''}
+      <div class="info-cell"><div class="k">Data entrada</div><div class="v">${c.date?fmtData(c.date):'—'}</div></div>
     </div>
-    ${c.nota?`<div class="nota-box">${c.nota}</div>`:''}
+    ${c.nota?`<div class="nota-box">${esc(c.nota)}</div>`:''}
     <div class="action-row">
       <button class="btn-sec" onclick="moveStage(${c.id},-1)">← Voltar</button>
       <button class="btn-primary" onclick="moveStage(${c.id},1)">Avançar →</button>
       <button class="btn-sec" onclick="editLead(${c.id})">Editar</button>
-      ${c.wa?`<a href="https://wa.me/55${c.wa}" target="_blank"><button class="btn-sec">WhatsApp</button></a>`:''}
+      <button class="btn-sec" onclick="deleteLead(${c.id})">Excluir</button>
+      ${c.wa?`<a href="${waLink(c.wa)}" target="_blank" rel="noopener"><button class="btn-sec">WhatsApp</button></a>`:''}
     </div>
     <p style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--cream)">Histórico</p>
-    <div>${(c.history||[]).map(h=>`<div class="history-item"><span class="history-date">${h.date}</span> — ${h.txt}</div>`).join('')}</div>
+    <div>${(c.history||[]).map(h=>`<div class="history-item"><span class="history-date">${fmtData(h.date)}</span> - ${esc(h.txt)}</div>`).join('')}</div>
     <div class="add-hist">
       <input id="new-hist-${c.id}" placeholder="Registrar interação...">
       <button class="btn-primary" onclick="addHistory(${c.id})">+ Registrar</button>
@@ -459,7 +580,7 @@ function moveStage(id,dir){
   const si=STAGES.indexOf(l[i].stage);const ni=si+dir;
   if(ni<0||ni>=STAGES.length)return;
   l[i].stage=STAGES[ni];
-  const now=new Date().toISOString().split('T')[0];
+  const now=hoje();
   l[i].history=l[i].history||[];
   l[i].history.push({txt:'Movido para '+STAGES[ni],date:now});
   saveLeads(l);renderAll();openDetailTab(id);
@@ -470,7 +591,7 @@ function addHistory(id){
   if(!inp||!inp.value.trim())return;
   const l=getLeads();const i=l.findIndex(x=>x.id===id);if(i<0)return;
   l[i].history=l[i].history||[];
-  l[i].history.push({txt:inp.value.trim(),date:new Date().toISOString().split('T')[0]});
+  l[i].history.push({txt:inp.value.trim(),date:hoje()});
   saveLeads(l);openDetailTab(id);
 }
 
@@ -480,7 +601,7 @@ function editLead(id){
   document.getElementById('modal-title').textContent='Editar lead';
   document.getElementById('f-nome').value=c.nome;
   document.getElementById('f-wa').value=c.wa?formatPhone(c.wa):'';
-  document.getElementById('f-origem').value=c.origem;
+  garantirOpcao(c.origem);document.getElementById('f-origem').value=c.origem;
   document.getElementById('f-stage').value=c.stage;
   document.getElementById('f-utm').value=c.utm||'';
   document.getElementById('f-nota').value=c.nota||'';
@@ -498,21 +619,32 @@ function setScriptCode(){
   const code=`<!-- Cole este script antes do </body> do seu site -->
 <script>
 (function(){
-  const WEBHOOK='SEU_URL_DO_APPS_SCRIPT_AQUI';
-  const dispositivo=/Mobi|Android/i.test(navigator.userAgent)?'Mobile':'Desktop';
-  function getParam(p){return new URLSearchParams(window.location.search).get(p)||'';}
-  function getOrigem(){
-    const s=getParam('utm_source').toLowerCase();
-    if(s==='meta'||s==='facebook')return 'Meta Ads';
-    if(s==='google')return 'Google Ads';
+  var WEBHOOK='SEU_URL_DO_APPS_SCRIPT_AQUI';
+  var dispositivo=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Mobile':'Desktop';
+  function p(k){return new URLSearchParams(window.location.search).get(k)||'';}
+  function origem(){
+    var s=p('utm_source').toLowerCase();
+    if(s==='meta'||s==='facebook'||p('fbclid'))return 'Meta Ads';
+    if(s==='google'||p('gclid'))return 'Google Ads';
     if(s==='instagram')return 'Instagram Orgânico';
-    return 'Orgânico';
+    return 'Site';
   }
-  window.addEventListener('load',function(){
-    fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({tipo:'visita',origem:getOrigem(),utm_source:getParam('utm_source'),utm_campaign:getParam('utm_campaign'),pagina:window.location.href,dispositivo:dispositivo})
-    }).catch(function(){});
-  });
+  function corpo(tipo,extra){
+    var o={tipo:tipo,origem:origem(),utm_source:p('utm_source'),utm_medium:p('utm_medium'),utm_campaign:p('utm_campaign'),gclid:p('gclid'),fbclid:p('fbclid'),pagina:window.location.href,dispositivo:dispositivo};
+    for(var k in extra)o[k]=extra[k];
+    return JSON.stringify(o);
+  }
+  function enviar(c){
+    try{if(navigator.sendBeacon&&navigator.sendBeacon(WEBHOOK,new Blob([c],{type:'text/plain;charset=UTF-8'})))return;}catch(e){}
+    fetch(WEBHOOK,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body:c}).catch(function(){});
+  }
+  window.addEventListener('load',function(){enviar(corpo('visita'));});
+  var enviou=false;
+  document.addEventListener('click',function(e){
+    if(enviou||!e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp"]'))return;
+    enviou=true;
+    enviar(corpo('lead',{nome:'Lead via '+location.hostname,event_id:'lead_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)}));
+  },true);
 })();
 <\/script>`;
   const el=document.getElementById('script-code');
