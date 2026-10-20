@@ -219,6 +219,9 @@ header button:hover{background:var(--navy-3);border-color:var(--border-gold);col
 .action-row{gap:10px}
 .history-item{padding:9px 0}
 
+.metric .value{font-size:36px;font-family:var(--sans);font-weight:500;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.tab:focus-visible{outline:none}
+.card-meta div{line-height:1.5}
 @media(max-width:700px){header{padding:12px 16px}.main{padding:1.25rem 16px 2rem}.logo{font-size:18px}.metric .value{font-size:30px}.tabs{gap:18px;overflow-x:auto}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -324,6 +327,15 @@ function saveLeads(l){localStorage.setItem('crm_leads',JSON.stringify(l))}
 let editId=null;
 let syncando=false;
 let semChave=false;
+
+function cardMeta(c){
+  const i=c.info||{};
+  const l1=[i.utm_source&&'Fonte: '+i.utm_source,(c.utm||i.utm_campaign)&&'Campanha: '+(c.utm||i.utm_campaign)].filter(Boolean).join(' · ');
+  const l2=[ctaLabel(c)&&'Botão: '+ctaLabel(c),i.dispositivo].filter(Boolean).join(' · ');
+  const l3=[i.utm_medium&&'Mídia: '+i.utm_medium,i.utm_content&&'Criativo: '+i.utm_content].filter(Boolean).join(' · ');
+  const ls=[l1,l3,l2].filter(Boolean);
+  return ls.length?`<div class="card-meta">${ls.map(x=>`<div>${esc(x)}</div>`).join('')}</div>`:'';
+}
 
 function ctaLabel(c){
   const m={hero:'Botão principal',nav:'Menu',final:'Chamada final',float:'Botão flutuante',rodape:'Rodapé'};
@@ -494,7 +506,7 @@ function renderMetrics(){
   const fechados=l.filter(x=>x.stage==='Fechado');
   const convRate=l.length>0?Math.round(fechados.length/l.length*100):0;
   const st=getSiteStats();
-  const visitaCard=st&&st.visitas>0?`<div class="metric"><div class="label">Visitas no site</div><div class="value">${st.visitas}</div><div class="sub">${(st.leads/st.visitas*100).toFixed(1).replace('.',',')}% clicam no WhatsApp</div></div>`:'';
+  const visitaCard=st&&st.visitas>0?`<div class="metric"><div class="label">Visitaram e não chamaram</div><div class="value">${Math.max(0,st.visitas-st.leads)}</div><div class="sub">de ${st.visitas} visita${st.visitas>1?'s':''} no site · ${Math.min(100,st.leads/st.visitas*100).toFixed(1).replace('.',',')}% chamaram no WhatsApp</div></div>`:'';
   document.getElementById('metrics-bar').innerHTML=`
     <div class="metric"><div class="label">Total de leads</div><div class="value">${l.length}</div><div class="sub">todos os estágios</div></div>
     <div class="metric"><div class="label">Em pipeline</div><div class="value">${ativos.length}</div><div class="sub">leads ativos</div></div>
@@ -519,7 +531,7 @@ function renderPipeline(){
         <div class="card-tags">
           <span class="tag tag-${origemClass(c.origem)}">${esc(c.origem)}</span>
         </div>
-        ${[c.utm,ctaLabel(c)].filter(Boolean).length?`<div class="card-meta">${esc([c.utm,ctaLabel(c)].filter(Boolean).join(' · '))}</div>`:''}
+        ${cardMeta(c)}
       </div>
     `).join('');
     return `<div class="stage">
