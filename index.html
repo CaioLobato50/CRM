@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
 <title>CRM de Vendas — Caio Lobato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -88,9 +90,6 @@ header button:hover{background:var(--navy-4)}
 .btn-sec{background:none;border:1px solid var(--border);border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;color:var(--cream);transition:background 0.2s,border-color 0.2s}
 .btn-sec:hover{background:var(--navy-3);border-color:var(--border-gold)}
 
-.script-box{background:var(--navy-2);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:1rem;border:1px solid var(--border)}
-.script-box pre{font-family:var(--font-mono);font-size:11px;color:var(--cream-3);white-space:pre-wrap;word-break:break-all;line-height:1.6}
-.script-label{font-size:12px;font-weight:500;margin-bottom:8px;color:var(--cream)}
 .copy-btn{font-size:11px;padding:5px 12px;border:1px solid var(--border-gold);border-radius:6px;background:var(--navy-3);cursor:pointer;color:var(--gold);margin-top:8px;transition:background 0.2s}
 .copy-btn:hover{background:var(--navy-4)}
 
@@ -127,9 +126,101 @@ header button:hover{background:var(--navy-4)}
 @media(max-width:500px){.info-row{grid-template-columns:repeat(2,1fr)}}
 .info-cell .k{font-size:11px;color:var(--text-muted);margin-bottom:2px}
 .info-cell .v{font-size:13px;color:var(--cream);font-weight:500}
+.info-cell.wide{grid-column:1/-1}
+.info-cell .v.small{font-size:12px;font-weight:400;word-break:break-all;color:var(--cream-2)}
+.card-meta{font-size:11px;color:var(--text-muted);margin-top:5px}
 .nota-box{font-size:12px;color:var(--text-muted);margin-bottom:1rem;padding:8px 10px;background:var(--navy-3);border-radius:var(--border-radius-md);border:1px solid var(--border)}
 .action-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
 .action-row button,.action-row a button{font-size:12px;padding:6px 12px}
+
+/* ===== Refinamento visual (so aparencia, sem mexer na logica) ===== */
+:root{
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --border:rgba(242,237,228,0.06);
+  --border-gold:rgba(201,153,58,0.28);
+  --border-radius-md:10px;
+  --border-radius-lg:16px;
+  --shadow:0 10px 30px -12px rgba(0,0,0,.6);
+}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--sans);font-size:14px;line-height:1.45;letter-spacing:.005em;
+  background:radial-gradient(900px 420px at 85% -120px,rgba(201,153,58,.09),transparent 70%),radial-gradient(700px 380px at -10% 0,rgba(30,39,54,.55),transparent 70%),var(--navy);background-attachment:fixed}
+::selection{background:rgba(201,153,58,.3);color:var(--cream)}
+*{scrollbar-width:thin;scrollbar-color:var(--navy-4) transparent}
+button,input,select,textarea{font-family:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+header{background:rgba(8,12,18,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:16px 32px;border-bottom:1px solid var(--border-gold)}
+.logo{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+.logo::before{content:'';width:7px;height:7px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 12px rgba(201,153,58,.6)}
+.logo span{font-style:italic;font-weight:500}
+header button{border:1px solid var(--border);background:transparent;color:var(--cream-3);padding:8px 16px;border-radius:999px;font-weight:500;transition:all .2s}
+header button:hover{background:var(--navy-3);border-color:var(--border-gold);color:var(--cream)}
+.btn-new{background:linear-gradient(135deg,var(--gold-2),var(--gold))!important;color:#1a1305!important;border-color:transparent!important;box-shadow:0 6px 18px -6px rgba(201,153,58,.55)}
+.btn-new:hover{transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(201,153,58,.7)}
+
+.main{padding:2rem 32px 3rem}
+.tabs{gap:28px;margin-bottom:2rem}
+.tab{padding:10px 2px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
+.tab.active{color:var(--gold-2);font-weight:600}
+
+.metrics{gap:14px;margin-bottom:2rem}
+.metric{background:linear-gradient(180deg,var(--navy-3),var(--navy-2));border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+.metric::before{height:1px;background:linear-gradient(90deg,var(--gold),transparent 70%)}
+.metric .label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.metric .value{font-family:var(--serif);font-size:38px;font-weight:600;line-height:1;color:var(--cream)}
+.metric .sub{font-size:11px;margin-top:8px}
+
+.pipeline{gap:12px}
+.stage{background:rgba(15,20,28,.7);border-radius:14px;padding:12px}
+.stage-title{font-size:10px;letter-spacing:.14em;margin-bottom:12px;padding:0 2px}
+.stage-count{border-radius:999px;padding:2px 9px;background:transparent;font-weight:500}
+.card{background:linear-gradient(180deg,var(--navy-3),#131a24);border-radius:12px;padding:12px 12px 12px 14px;margin-bottom:8px;position:relative;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}
+.card::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:2px;border-radius:2px;background:var(--gold);opacity:.35;transition:opacity .18s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--border-gold)}
+.card:hover::before{opacity:1}
+.card-name{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.card-phone{font-size:11.5px}
+.card-meta{color:var(--text-muted);font-size:11px;margin-top:6px}
+.tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px;border:1px solid currentColor;border-color:color-mix(in srgb,currentColor 28%,transparent);letter-spacing:.02em}
+.add-btn{border-radius:10px;padding:8px}
+
+.modal-bg{background:rgba(4,6,10,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.modal{background:linear-gradient(180deg,var(--navy-3),var(--navy-2));padding:1.75rem;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}
+.modal h3{font-family:var(--serif);font-size:24px;font-weight:600;margin-bottom:1.25rem}
+.form-row label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.form-row input,.form-row select,.form-row textarea{padding:10px 12px;border-radius:10px;background:var(--navy-2)}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+.btn-primary{background:linear-gradient(135deg,var(--gold-2),var(--gold));color:#1a1305;border-radius:999px;padding:10px 22px;box-shadow:0 6px 18px -8px rgba(201,153,58,.6)}
+.btn-primary:hover{background:linear-gradient(135deg,#ecc26a,var(--gold-2))}
+.btn-sec{border-radius:999px;padding:10px 20px}
+
+.section-title{font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:1rem}
+.origem-chart{gap:12px}
+.origem-bar-wrap{height:6px;border-radius:999px}
+.origem-bar{border-radius:999px}
+.origem-label{font-size:12.5px;color:var(--cream-3)}
+
+.filters{gap:10px;margin-bottom:1.25rem}
+.filters select,.filters input{padding:9px 14px;border-radius:999px;background:var(--navy-2);transition:border-color .2s}
+.leads-table{font-size:12.5px;border-collapse:separate;border-spacing:0}
+.leads-table th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border-gold);position:sticky;top:0;background:var(--navy)}
+.leads-table td{padding:13px 14px}
+.leads-table tr:hover td{background:rgba(22,29,40,.8)}
+
+.detail-panel{background:linear-gradient(180deg,var(--navy-3),var(--navy-2));padding:1.75rem;box-shadow:var(--shadow)}
+.detail-name{font-family:var(--serif);font-size:28px;font-weight:600}
+.info-row{gap:10px}
+.info-cell{background:var(--navy-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.info-cell .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.info-cell .v{font-size:13.5px}
+.nota-box{border-radius:10px;padding:12px 14px}
+.action-row{gap:10px}
+.history-item{padding:9px 0}
+
+@media(max-width:700px){header{padding:12px 16px}.main{padding:1.25rem 16px 2rem}.logo{font-size:18px}.metric .value{font-size:30px}.tabs{gap:18px;overflow-x:auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
@@ -150,7 +241,6 @@ header button:hover{background:var(--navy-4)}
     <button class="tab active" onclick="showTab('pipeline')">Pipeline</button>
     <button class="tab" onclick="showTab('leads')">Todos os leads</button>
     <button class="tab" onclick="showTab('origens')">Origens</button>
-    <button class="tab" onclick="showTab('script')">Script p/ sites</button>
   </div>
 
   <div id="tab-pipeline" class="pane active">
@@ -165,7 +255,7 @@ header button:hover{background:var(--navy-4)}
       <select id="filter-stage" onchange="renderLeadsTable()"><option value="">Todos estágios</option></select>
     </div>
     <div style="overflow-x:auto">
-      <table class="leads-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Origem</th><th>Estágio</th><th>Data</th></tr></thead><tbody id="leads-tbody"></tbody></table>
+      <table class="leads-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Origem</th><th>Campanha</th><th>Botão</th><th>Dispositivo</th><th>Estágio</th><th>Data</th></tr></thead><tbody id="leads-tbody"></tbody></table>
     </div>
     <div class="detail-panel" id="detail-panel"></div>
   </div>
@@ -176,14 +266,6 @@ header button:hover{background:var(--navy-4)}
     <div style="margin-top:1.5rem"><p class="section-title">Leads por campanha UTM</p><div id="utm-chart" class="origem-chart"></div></div>
   </div>
 
-  <div id="tab-script" class="pane">
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Cole esse script em qualquer site seu antes do <code>&lt;/body&gt;</code>. Ele registra cada visita e, quando alguém clicar no botão do WhatsApp, o lead entra automaticamente no CRM. Troque <code>SEU_URL_DO_APPS_SCRIPT_AQUI</code> pela URL de publicação do seu Apps Script.</p>
-    <div class="script-box">
-      <p class="script-label">Script de rastreamento (visitas e cliques no WhatsApp)</p>
-      <pre id="script-code"></pre>
-      <button class="copy-btn" onclick="copyScript()">Copiar script</button>
-    </div>
-  </div>
 </div>
 
 <!-- Modal novo/editar lead -->
@@ -243,6 +325,37 @@ let editId=null;
 let syncando=false;
 let semChave=false;
 
+function ctaLabel(c){
+  const m={hero:'Botão principal',nav:'Menu',final:'Chamada final',float:'Botão flutuante',rodape:'Rodapé'};
+  const k=(c.info&&c.info.cta)||'';
+  return m[k]||k;
+}
+
+function montarInfo(r){
+  return {
+    utm_source:campo(r,'utm_source'),utm_campaign:campo(r,'utm_campaign'),utm_medium:campo(r,'utm_medium'),
+    utm_content:campo(r,'utm_content'),utm_term:campo(r,'utm_term'),cta:campo(r,'cta'),
+    dispositivo:campo(r,'dispositivo'),pagina:campo(r,'pagina'),referrer:campo(r,'referrer'),
+    primeira_pagina:campo(r,'primeira_pagina'),gclid:campo(r,'gclid'),gbraid:campo(r,'gbraid'),
+    wbraid:campo(r,'wbraid'),fbclid:campo(r,'fbclid')
+  };
+}
+
+function infoHtml(c){
+  const i=c.info;if(!i)return '';
+  const curto=v=>v.length>22?v.slice(0,22)+'...':v;
+  const cel=(k,v,cls)=>v?`<div class="info-cell${cls?' wide':''}"><div class="k">${k}</div><div class="v${cls?' small':''}">${esc(v)}</div></div>`:'';
+  const click=[i.gclid&&'Google (gclid): '+curto(i.gclid),i.gbraid&&'Google (gbraid): '+curto(i.gbraid),i.wbraid&&'Google (wbraid): '+curto(i.wbraid),i.fbclid&&'Meta (fbclid): '+curto(i.fbclid)].filter(Boolean).join(' | ');
+  const html=[
+    cel('Fonte (UTM Source)',i.utm_source),cel('Campanha',i.utm_campaign),cel('Mídia (UTM Medium)',i.utm_medium),
+    cel('Criativo (UTM Content)',i.utm_content),cel('Termo (UTM Term)',i.utm_term),cel('Botão clicado',ctaLabel(c)),
+    cel('Dispositivo',i.dispositivo),cel('Click ID',click,1),cel('Referrer',i.referrer,1),
+    cel('Página',i.pagina,1),cel('Primeira página',i.primeira_pagina,1)
+  ].join('');
+  if(!html)return '';
+  return `<p style="font-size:12px;font-weight:500;margin:4px 0 6px;color:var(--cream)">Origem do lead</p><div class="info-row" style="margin-bottom:1rem">${html}</div>`;
+}
+
 async function syncFromSheets(){
   if(syncando||semChave)return;
   syncando=true;
@@ -266,30 +379,22 @@ async function syncFromSheets(){
     const local=getLeads();
     const ids=new Set(local.map(x=>x.sheetsId).filter(Boolean));
     const ign=getIgnorados();
-    let added=0;
+    const porSid=new Map(local.filter(x=>x.sheetsId).map(x=>[x.sheetsId,x]));
+    let added=0,mudou=false;
     rows.forEach(row=>{
       const r={};
       for(const k in row)r[norm(k)]=row[k];
       const eid=campo(r,'event_id');
       // sem Event ID (leads antigos ou de outros sites) mantem a chave antiga Data + Nome
       const sid=eid||((row['Data']||'')+'_'+(row['Nome']||''));
-      if(ids.has(sid)||ign.has(sid))return;
+      if(ign.has(sid))return;
+      if(ids.has(sid)){const ex=porSid.get(sid);if(ex&&!ex.info){ex.info=montarInfo(r);mudou=true}return}
       ids.add(sid);
       const data=parseData(campo(r,'data'));
       const codigo=campo(r,'codigo');
       let nome=campo(r,'nome');
       if(!nome||/^lead via /i.test(nome))nome=codigo?'Lead '+codigo:'Lead via site';
       const disp=campo(r,'dispositivo');
-      const nota=['Capturado via site',
-        campo(r,'cta')&&'Botão: '+campo(r,'cta'),
-        campo(r,'pagina')&&'Página: '+campo(r,'pagina'),
-        campo(r,'gclid')&&'Clique em anúncio Google (gclid)',
-        campo(r,'fbclid')&&'Clique em anúncio Meta (fbclid)',
-        campo(r,'utm_medium')&&'Mídia: '+campo(r,'utm_medium'),
-        campo(r,'utm_content')&&'Criativo: '+campo(r,'utm_content'),
-        campo(r,'utm_term')&&'Termo: '+campo(r,'utm_term'),
-        campo(r,'referrer')&&'Referrer: '+campo(r,'referrer')
-      ].filter(Boolean).join(' | ');
       local.push({
         id:Date.now()+Math.random(),
         sheetsId:sid,
@@ -298,14 +403,15 @@ async function syncFromSheets(){
         origem:campo(r,'origem')||'Site',
         stage:'Lead',
         utm:campo(r,'utm_campaign','utm_source'),
-        nota,
+        nota:'',
+        info:montarInfo(r),
         ref:codigo,
         history:[{txt:'Lead capturado via site'+(disp?' ('+disp+')':'')+(codigo?', ref '+codigo:''),date:data}],
         date:data
       });
       added++;
     });
-    if(added>0)saveLeads(local);
+    if(added>0||mudou)saveLeads(local);
     // visitas: so existe no Apps Script novo (acao=stats). No antigo a resposta e ignorada.
     let statsMudou=false;
     try{
@@ -315,7 +421,7 @@ async function syncFromSheets(){
         if(novo!==localStorage.getItem('crm_site_stats')){localStorage.setItem('crm_site_stats',novo);statsMudou=true}
       }
     }catch(e){}
-    if(added>0||statsMudou)renderAll();
+    if(added>0||mudou||statsMudou)renderAll();
     setBtn('Sincronizar'+(added>0?' (+'+added+' novos)':''));
     setTimeout(()=>setBtn('Sincronizar'),4000);
   }catch(err){
@@ -359,7 +465,7 @@ function importarBackup(ev){
 }
 
 function init(){
-  renderAll();populateFilters();setScriptCode();
+  renderAll();populateFilters();
   syncFromSheets();
   setInterval(()=>{if(!document.hidden)syncFromSheets()},60000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncFromSheets()});
@@ -413,6 +519,7 @@ function renderPipeline(){
         <div class="card-tags">
           <span class="tag tag-${origemClass(c.origem)}">${esc(c.origem)}</span>
         </div>
+        ${[c.utm,ctaLabel(c)].filter(Boolean).length?`<div class="card-meta">${esc([c.utm,ctaLabel(c)].filter(Boolean).join(' · '))}</div>`:''}
       </div>
     `).join('');
     return `<div class="stage">
@@ -455,6 +562,9 @@ function renderLeadsTable(){
       <td>${esc(c.nome)}</td>
       <td>${c.wa?formatPhone(c.wa):'—'}</td>
       <td><span class="tag tag-${origemClass(c.origem)}">${esc(c.origem)}</span></td>
+      <td>${esc(c.utm)||'—'}</td>
+      <td>${esc(ctaLabel(c))||'—'}</td>
+      <td>${esc(c.info&&c.info.dispositivo)||'—'}</td>
       <td>${c.stage}</td>
       <td>${c.date?fmtData(c.date):'—'}</td>
     </tr>
@@ -557,7 +667,7 @@ function openDetailTab(id){
       ${c.ref?'<div class="info-cell"><div class="k">Código (ref)</div><div class="v">'+esc(c.ref)+'</div></div>':''}
       <div class="info-cell"><div class="k">Data entrada</div><div class="v">${c.date?fmtData(c.date):'—'}</div></div>
     </div>
-    ${c.nota?`<div class="nota-box">${esc(c.nota)}</div>`:''}
+    ${infoHtml(c)}${c.nota&&!(c.info&&c.sheetsId&&/^Capturado via site/.test(c.nota))?`<div class="nota-box">${esc(c.nota)}</div>`:''}
     <div class="action-row">
       <button class="btn-sec" onclick="moveStage(${c.id},-1)">← Voltar</button>
       <button class="btn-primary" onclick="moveStage(${c.id},1)">Avançar →</button>
@@ -609,54 +719,10 @@ function editLead(id){
 }
 
 function showTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>{const names=['pipeline','leads','origens','script'];t.className='tab'+(names[i]===name?' active':'')});
+  document.querySelectorAll('.tab').forEach((t,i)=>{const names=['pipeline','leads','origens'];t.className='tab'+(names[i]===name?' active':'')});
   document.querySelectorAll('.pane').forEach(p=>p.className='pane');
   document.getElementById('tab-'+name).className='pane active';
   if(name==='origens')renderOrigens();
-}
-
-function setScriptCode(){
-  const code=`<!-- Cole este script antes do </body> do seu site -->
-<script>
-(function(){
-  var WEBHOOK='SEU_URL_DO_APPS_SCRIPT_AQUI';
-  var dispositivo=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Mobile':'Desktop';
-  function p(k){return new URLSearchParams(window.location.search).get(k)||'';}
-  function origem(){
-    var s=p('utm_source').toLowerCase();
-    if(s==='meta'||s==='facebook'||p('fbclid'))return 'Meta Ads';
-    if(s==='google'||p('gclid'))return 'Google Ads';
-    if(s==='instagram')return 'Instagram Orgânico';
-    return 'Site';
-  }
-  function corpo(tipo,extra){
-    var o={tipo:tipo,origem:origem(),utm_source:p('utm_source'),utm_medium:p('utm_medium'),utm_campaign:p('utm_campaign'),gclid:p('gclid'),fbclid:p('fbclid'),pagina:window.location.href,dispositivo:dispositivo};
-    for(var k in extra)o[k]=extra[k];
-    return JSON.stringify(o);
-  }
-  function enviar(c){
-    try{if(navigator.sendBeacon&&navigator.sendBeacon(WEBHOOK,new Blob([c],{type:'text/plain;charset=UTF-8'})))return;}catch(e){}
-    fetch(WEBHOOK,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body:c}).catch(function(){});
-  }
-  window.addEventListener('load',function(){enviar(corpo('visita'));});
-  var enviou=false;
-  document.addEventListener('click',function(e){
-    if(enviou||!e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp"]'))return;
-    enviou=true;
-    enviar(corpo('lead',{nome:'Lead via '+location.hostname,event_id:'lead_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)}));
-  },true);
-})();
-<\/script>`;
-  const el=document.getElementById('script-code');
-  if(el)el.textContent=code;
-}
-
-function copyScript(){
-  const txt=document.getElementById('script-code').textContent;
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn=document.querySelector('.copy-btn');
-    btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar script',2000);
-  });
 }
 
 document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal()});
